@@ -1,0 +1,22 @@
+---
+const {
+  title,
+  tone = "default"
+} = Astro.props as {
+  title: string;
+  tone?: "default" | "warning" | "success";
+};
+
+const tones = {
+  default: "border-accent-500/30 bg-accent-500/10",
+  warning: "border-amberish-400/30 bg-amberish-400/10",
+  success: "border-emerald-400/30 bg-emerald-400/10"
+};
+---
+
+<section class={`not-prose my-6 rounded-3xl border px-5 py-5 ${tones[tone]}`}>
+  <p class="mb-3 text-sm font-semibold uppercase tracking-[0.16em] text-white">{title}</p>
+  <div class="space-y-3 text-sm leading-7 text-ink-100">
+    <slot />
+  </div>
+</section>

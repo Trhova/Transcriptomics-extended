@@ -1,0 +1,129 @@
+---
+interface LinkItem {
+  label: string;
+  href: string;
+}
+
+const {
+  title,
+  defaultTool,
+  useWhen,
+  inputs = [],
+  outputs = [],
+  alternatives = [],
+  switchWhen,
+  pros = [],
+  cons = [],
+  gotcha,
+  goodOutput,
+  docs = [],
+  papers = []
+} = Astro.props as {
+  title: string;
+  defaultTool: string;
+  useWhen: string;
+  inputs?: string[];
+  outputs?: string[];
+  alternatives?: string[];
+  switchWhen: string;
+  pros?: string[];
+  cons?: string[];
+  gotcha: string;
+  goodOutput: string;
+  docs?: LinkItem[];
+  papers?: LinkItem[];
+};
+---
+
+<section class="not-prose my-8 rounded-[1.75rem] border border-white/10 bg-gradient-to-br from-white/8 to-white/3 p-6 shadow-panel">
+  <div class="mb-5 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+    <div>
+      <p class="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-accent-300">Recommended default</p>
+      <h3 class="m-0 font-display text-2xl text-white">{title}</h3>
+    </div>
+    <div class="rounded-2xl border border-accent-500/25 bg-accent-500/10 px-4 py-3 text-sm text-ink-100">
+      <span class="font-semibold text-white">Default:</span> {defaultTool}
+    </div>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2">
+    <div class="rounded-2xl border border-white/10 bg-ink-950/60 p-4">
+      <p class="mb-2 text-sm font-semibold text-white">Use when</p>
+      <p class="m-0 text-sm leading-7 text-ink-200">{useWhen}</p>
+    </div>
+    <div class="rounded-2xl border border-white/10 bg-ink-950/60 p-4">
+      <p class="mb-2 text-sm font-semibold text-white">Switch to an alternative when</p>
+      <p class="m-0 text-sm leading-7 text-ink-200">{switchWhen}</p>
+    </div>
+  </div>
+
+  <div class="mt-4 grid gap-4 xl:grid-cols-4">
+    <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+      <p class="mb-2 text-sm font-semibold text-white">Inputs</p>
+      <ul class="m-0 space-y-2 pl-5 text-sm leading-6 text-ink-200">
+        {inputs.map((item) => <li>{item}</li>)}
+      </ul>
+    </div>
+    <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+      <p class="mb-2 text-sm font-semibold text-white">Outputs</p>
+      <ul class="m-0 space-y-2 pl-5 text-sm leading-6 text-ink-200">
+        {outputs.map((item) => <li>{item}</li>)}
+      </ul>
+    </div>
+    <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+      <p class="mb-2 text-sm font-semibold text-white">Alternatives</p>
+      <ul class="m-0 space-y-2 pl-5 text-sm leading-6 text-ink-200">
+        {alternatives.map((item) => <li>{item}</li>)}
+      </ul>
+    </div>
+    <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+      <p class="mb-2 text-sm font-semibold text-white">Gotcha</p>
+      <p class="m-0 text-sm leading-7 text-ink-200">{gotcha}</p>
+    </div>
+  </div>
+
+  <div class="mt-4 grid gap-4 md:grid-cols-2">
+    <div class="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-4">
+      <p class="mb-2 text-sm font-semibold text-white">Pros</p>
+      <ul class="m-0 space-y-2 pl-5 text-sm leading-6 text-ink-100">
+        {pros.map((item) => <li>{item}</li>)}
+      </ul>
+    </div>
+    <div class="rounded-2xl border border-amberish-400/20 bg-amberish-400/10 p-4">
+      <p class="mb-2 text-sm font-semibold text-white">Cons</p>
+      <ul class="m-0 space-y-2 pl-5 text-sm leading-6 text-ink-100">
+        {cons.map((item) => <li>{item}</li>)}
+      </ul>
+    </div>
+  </div>
+
+  <div class="mt-4 rounded-2xl border border-white/10 bg-ink-950/60 p-4">
+    <p class="mb-2 text-sm font-semibold text-white">What good output looks like</p>
+    <p class="m-0 text-sm leading-7 text-ink-200">{goodOutput}</p>
+  </div>
+
+  {(docs.length > 0 || papers.length > 0) && (
+    <div class="mt-4 grid gap-4 md:grid-cols-2">
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+        <p class="mb-2 text-sm font-semibold text-white">Official docs</p>
+        <ul class="m-0 space-y-2 pl-5 text-sm leading-6 text-ink-200">
+          {docs.map((item) => (
+            <li>
+              <a href={item.href}>{item.label}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+        <p class="mb-2 text-sm font-semibold text-white">Primary paper</p>
+        <ul class="m-0 space-y-2 pl-5 text-sm leading-6 text-ink-200">
+          {papers.map((item) => (
+            <li>
+              <a href={item.href}>{item.label}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )}
+</section>

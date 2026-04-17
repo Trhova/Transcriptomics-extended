@@ -1,0 +1,25 @@
+---
+const {
+  title,
+  stage,
+  outcome,
+  href
+} = Astro.props as {
+  title: string;
+  stage: string;
+  outcome: string;
+  href: string;
+};
+---
+
+<a
+  href={href}
+  class="not-prose flex h-full flex-col justify-between rounded-3xl border border-white/10 bg-white/5 p-5 no-underline transition hover:-translate-y-0.5 hover:border-accent-500/40 hover:bg-white/10"
+>
+  <div class="space-y-3">
+    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-accent-300">{stage}</p>
+    <h3 class="m-0 font-display text-xl text-white">{title}</h3>
+    <p class="m-0 text-sm leading-7 text-ink-200">{outcome}</p>
+  </div>
+  <span class="mt-5 text-sm font-medium text-accent-300">Jump to section</span>
+</a>
