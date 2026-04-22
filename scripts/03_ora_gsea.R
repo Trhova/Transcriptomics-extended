@@ -4,6 +4,18 @@ check_required_packages(c("fgsea", "msigdbr"))
 load_packages(c("fgsea", "msigdbr", "scales"))
 initialize_repo_dirs()
 
+format_term_label <- function(value, prefix = NULL) {
+  label <- value
+
+  if (!is.null(prefix)) {
+    label <- sub(prefix, "", label)
+  }
+
+  label <- gsub("_", " ", label)
+  label <- tolower(label)
+  tools::toTitleCase(label)
+}
+
 res_shrunk_tbl <- readr::read_csv("results/tables/deseq2_results_full.csv.gz", show_col_types = FALSE)
 
 deg_threshold <- res_shrunk_tbl %>%
@@ -57,6 +69,7 @@ run_ora <- function(genes_of_interest, universe_genes, pathway_df, min_size = 10
 
     tibble::tibble(
       ID = term,
+      Term = format_term_label(term, "^GOBP_"),
       Description = descriptions$gs_description[descriptions$gs_name == term],
       GeneRatio = paste0(overlap, "/", n_interest),
       BgRatio = paste0(set_size, "/", n_universe),
@@ -87,7 +100,7 @@ ora_plot_tbl <- dplyr::bind_rows(
   dplyr::group_by(direction) %>%
   dplyr::slice_head(n = 8) %>%
   dplyr::ungroup() %>%
-  dplyr::mutate(term = forcats::fct_reorder(Description, -log10(p.adjust)))
+  dplyr::mutate(term = forcats::fct_reorder(Term, -log10(p.adjust)))
 
 ora_plot <- ggplot(ora_plot_tbl, aes(-log10(p.adjust), term, color = direction, size = Count)) +
   geom_point(alpha = 0.85) +
@@ -122,7 +135,10 @@ gsea_res <- fgsea::fgsea(pathways = pathway_list, stats = rank_vector, minSize =
 
 gsea_tbl <- as_tibble(gsea_res) %>%
   dplyr::arrange(padj, dplyr::desc(abs(NES))) %>%
-  dplyr::mutate(direction = dplyr::if_else(NES > 0, "Positive", "Negative"))
+  dplyr::mutate(
+    direction = dplyr::if_else(NES > 0, "Positive", "Negative"),
+    Pathway = format_term_label(pathway, "^HALLMARK_")
+  )
 
 write_csv_table(gsea_tbl, "results/tables/top_gsea_terms.csv")
 
@@ -130,7 +146,7 @@ gsea_plot_tbl <- dplyr::bind_rows(
   gsea_tbl %>% dplyr::filter(NES > 0) %>% dplyr::slice_head(n = 8),
   gsea_tbl %>% dplyr::filter(NES < 0) %>% dplyr::slice_head(n = 8)
 ) %>%
-  dplyr::mutate(pathway = forcats::fct_reorder(pathway, NES))
+  dplyr::mutate(pathway = forcats::fct_reorder(Pathway, NES))
 
 gsea_plot <- ggplot(gsea_plot_tbl, aes(NES, pathway, fill = direction)) +
   geom_col(width = 0.75) +

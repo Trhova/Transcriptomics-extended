@@ -209,18 +209,22 @@ ORA gives a first-pass biological summary, but it depends on the threshold used 
 
 ![ORA summary](results/figures/ora_summary.png)
 
+#### Top up-regulated themes
+
 ```{r ora-up}
 top_ora_up %>%
-  select(Description, GeneRatio, Count, p.adjust) %>%
-  slice_head(n = 8) %>%
+  select(Term, GeneRatio, Count, p.adjust) %>%
+  slice_head(n = 6) %>%
   mutate(p.adjust = signif(p.adjust, 3)) %>%
   kable()
 ```
 
+#### Top down-regulated themes
+
 ```{r ora-down}
 top_ora_down %>%
-  select(Description, GeneRatio, Count, p.adjust) %>%
-  slice_head(n = 8) %>%
+  select(Term, GeneRatio, Count, p.adjust) %>%
+  slice_head(n = 6) %>%
   mutate(p.adjust = signif(p.adjust, 3)) %>%
   kable()
 ```
@@ -251,7 +255,7 @@ GSEA complements ORA by using the whole ranked result. It is often more sensitiv
 
 ```{r gsea-table}
 top_gsea %>%
-  select(pathway, NES, padj, size, direction) %>%
+  select(Pathway, NES, padj, size, direction) %>%
   slice_head(n = 10) %>%
   mutate(across(c(NES, padj), signif, 3)) %>%
   kable()

@@ -271,27 +271,27 @@ threshold used to define DE genes.
 <figcaption aria-hidden="true">ORA summary</figcaption>
 </figure>
 
-| Description | GeneRatio | Count | p.adjust |
-|:---|:---|---:|---:|
-| A process that is carried out at the cellular level which results in the assembly, arrangement of constituent parts, or disassembly of external structures that lie outside the plasma membrane and surround the entire cell. \[GOC:ai, GOC:dph, GOC:jl, GOC:mah\] | 26/415 | 26 | 8.03e-05 |
-| An organ system process carried out at the level of a muscle. Muscle tissue is composed of contractile cells or fibers. \[GOC:mtg_cardio\] | 26/415 | 26 | 9.50e-03 |
-| A process in which muscle adapts, with consequent modifications to structural and/or functional phenotypes, in response to a stimulus. Stimuli include contractile activity, loading conditions, substrate supply, and environmental factors. These adaptive events occur in both muscle fibers and associated structures (motoneurons and capillaries), and they involve alterations in regulatory mechanisms, contractile properties and metabolic capacities. \[GOC:mtg_muscle, <PMID:11181628>, <PMID:11449884>, <PMID:12605307>\] | 11/415 | 11 | 9.50e-03 |
-| Any process in which striated muscle adapts, with consequent modifications to structural and/or functional phenotypes, in response to a stimulus. Stimuli include contractile activity, loading conditions, substrate supply, and environmental factors. These adaptive events occur in both muscle fibers and associated structures (motoneurons and capillaries), and they involve alterations in regulatory mechanisms, contractile properties and metabolic capacities. \[GOC:mtg_muscle\] | 7/415 | 7 | 9.50e-03 |
-| Any process that modulates the frequency, rate or extent of a system process, a multicellular organismal process carried out by any of the organs or tissues in an organ system. \[GOC:jl\] | 26/415 | 26 | 1.25e-02 |
-| The attachment of a cell to the underlying substrate via adhesion molecules. \[GOC:mah, GOC:pf\] | 22/415 | 22 | 1.32e-02 |
-| The muscle system process that results in enlargement or overgrowth of all or part of a muscle organ due to an increase in the size of its muscle cells. Physiological hypertrophy is a normal process during development (it stops in cardiac muscle after adolescence) and can also be brought on in response to demand. In athletes cardiac and skeletal muscles undergo hypertrophy stimulated by increasing muscle activity on exercise. Smooth muscle cells in the uterus undergo hypertrophy during pregnancy. \[GOC:mtg_muscle\] | 10/415 | 10 | 1.32e-02 |
-| The process that involves the secretion of or response to endocrine hormones. An endocrine hormone is a hormone released into the circulatory system. \[<ISBN:0721662544>\] | 9/415 | 9 | 1.32e-02 |
+#### Top up-regulated themes
 
-| Description | GeneRatio | Count | p.adjust |
-|:---|:---|---:|---:|
-| An organ system process carried out by any of the organs or tissues of the circulatory system. The circulatory system is an organ system that moves extracellular fluids to and from tissue within a multicellular organism. \[GOC:mtg_cardio\] | 33/345 | 33 | 3.20e-06 |
-| The progression of an axon over time. Covers axonogenesis (de novo generation of an axon) and axon regeneration (regrowth), as well as processes pertaining to the progression of the axon over time (fasciculation and defasciculation). \[GOC:dph, GOC:pg, GOC:pr\] | 30/345 | 30 | 1.47e-05 |
-| Any process that modulates the frequency, rate or extent of nervous system development, the origin and formation of nervous tissue. \[GOC:ai\] | 26/345 | 26 | 1.47e-05 |
-| Any process that modulates the frequency, rate or extent of blood circulation. \[GO_REF:0000058, GOC:mr, GOC:TermGenie, <PMID:10659969>\] | 19/345 | 19 | 1.47e-05 |
-| Any process that activates, maintains or increases the frequency, rate or extent of nervous system development, the origin and formation of nervous tissue. \[GOC:ai\] | 20/345 | 20 | 2.60e-05 |
-| Any process that modulates the frequency, rate or extent of a system process, a multicellular organismal process carried out by any of the organs or tissues in an organ system. \[GOC:jl\] | 27/345 | 27 | 1.04e-04 |
-| The process in which the structures of a neuron are generated and organized. This process occurs while the initially relatively unspecialized cell is acquiring the specialized features of a neuron. \[GOC:dph, GOC:tb\] | 30/345 | 30 | 1.06e-04 |
-| Any process that modulates the levels of body fluids. \[GOC:ai, GOC:dph, GOC:tb\] | 22/345 | 22 | 1.06e-04 |
+| Term                                          | GeneRatio | Count | p.adjust |
+|:----------------------------------------------|:----------|------:|---------:|
+| External Encapsulating Structure Organization | 26/415    |    26 | 8.03e-05 |
+| Muscle System Process                         | 26/415    |    26 | 9.50e-03 |
+| Muscle Adaptation                             | 11/415    |    11 | 9.50e-03 |
+| Striated Muscle Adaptation                    | 7/415     |     7 | 9.50e-03 |
+| Regulation of System Process                  | 26/415    |    26 | 1.25e-02 |
+| Cell Substrate Adhesion                       | 22/415    |    22 | 1.32e-02 |
+
+#### Top down-regulated themes
+
+| Term                                              | GeneRatio | Count | p.adjust |
+|:--------------------------------------------------|:----------|------:|---------:|
+| Circulatory System Process                        | 33/345    |    33 | 3.20e-06 |
+| Axon Development                                  | 30/345    |    30 | 1.47e-05 |
+| Regulation of Nervous System Development          | 26/345    |    26 | 1.47e-05 |
+| Regulation of Blood Circulation                   | 19/345    |    19 | 1.47e-05 |
+| Positive Regulation of Nervous System Development | 20/345    |    20 | 2.60e-05 |
+| Regulation of System Process                      | 27/345    |    27 | 1.04e-04 |
 
 In this dataset, ORA highlights the biological themes that stand out
 once we draw a hard line around the DE genes. That is useful, but it
@@ -327,18 +327,18 @@ sensitive to coordinated but moderate shifts.
 <figcaption aria-hidden="true">GSEA summary</figcaption>
 </figure>
 
-| pathway                            |  NES |    padj | size | direction |
-|:-----------------------------------|-----:|--------:|-----:|:----------|
-| HALLMARK_ADIPOGENESIS              | 1.76 | 0.00143 |  196 | Positive  |
-| HALLMARK_OXIDATIVE_PHOSPHORYLATION | 1.55 | 0.08740 |  199 | Positive  |
-| HALLMARK_ANDROGEN_RESPONSE         | 1.52 | 0.13000 |   97 | Positive  |
-| HALLMARK_XENOBIOTIC_METABOLISM     | 1.41 | 0.18100 |  192 | Positive  |
-| HALLMARK_TNFA_SIGNALING_VIA_NFKB   | 1.41 | 0.18100 |  193 | Positive  |
-| HALLMARK_APICAL_JUNCTION           | 1.39 | 0.18100 |  188 | Positive  |
-| HALLMARK_PROTEIN_SECRETION         | 1.33 | 0.20900 |   95 | Positive  |
-| HALLMARK_KRAS_SIGNALING_DN         | 1.32 | 0.20900 |  167 | Positive  |
-| HALLMARK_UV_RESPONSE_DN            | 1.32 | 0.20900 |  144 | Positive  |
-| HALLMARK_IL2_STAT5_SIGNALING       | 1.31 | 0.20900 |  190 | Positive  |
+| Pathway                   |   NES |    padj | size | direction |
+|:--------------------------|------:|--------:|-----:|:----------|
+| Adipogenesis              |  1.73 | 0.00108 |  196 | Positive  |
+| Oxidative Phosphorylation |  1.52 | 0.03650 |  199 | Positive  |
+| Androgen Response         |  1.50 | 0.16000 |   97 | Positive  |
+| Tnfa Signaling via Nfkb   |  1.39 | 0.16000 |  193 | Positive  |
+| Xenobiotic Metabolism     |  1.40 | 0.20300 |  192 | Positive  |
+| Apical Junction           |  1.37 | 0.21300 |  188 | Positive  |
+| Uv Response Dn            |  1.30 | 0.21300 |  144 | Positive  |
+| Interferon Gamma Response | -1.29 | 0.21300 |  189 | Negative  |
+| Il2 Stat5 Signaling       |  1.29 | 0.21300 |  190 | Positive  |
+| Kras Signaling Dn         |  1.29 | 0.21300 |  167 | Positive  |
 
 <figure>
 <img src="results/figures/gsea_top_positive.png"
