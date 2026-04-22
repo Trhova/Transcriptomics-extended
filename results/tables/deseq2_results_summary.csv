@@ -1,0 +1,6 @@
+metric,value
+Genes tested,16782
+Significant genes (padj < 0.05),4028
+Significant genes with |log2FC| >= 1,816
+Up-regulated genes,450
+Down-regulated genes,366

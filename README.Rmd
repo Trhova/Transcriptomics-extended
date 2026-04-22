@@ -1,0 +1,356 @@
+---
+output:
+  github_document:
+    toc: false
+    html_preview: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE,
+  message = FALSE
+)
+
+library(readr)
+library(dplyr)
+library(knitr)
+
+sample_metadata <- read_csv("results/tables/sample_metadata.csv", show_col_types = FALSE)
+deseq_summary <- read_csv("results/tables/deseq2_results_summary.csv", show_col_types = FALSE)
+top_de <- read_csv("results/tables/top_de_genes.csv", show_col_types = FALSE)
+top_ora_up <- read_csv("results/tables/top_ora_terms_up.csv", show_col_types = FALSE)
+top_ora_down <- read_csv("results/tables/top_ora_terms_down.csv", show_col_types = FALSE)
+top_gsea <- read_csv("results/tables/top_gsea_terms.csv", show_col_types = FALSE)
+sample_scores <- read_csv("results/tables/sample_level_scores.csv", show_col_types = FALSE)
+top_progeny <- read_csv("results/tables/top_progeny_pathways.csv", show_col_types = FALSE)
+top_viper <- read_csv("results/tables/top_viper_tfs.csv", show_col_types = FALSE)
+```
+
+# Airway Bulk RNA-seq Walkthrough
+
+## 1. Project overview
+
+This repository is a small, end-to-end transcriptomics teaching case study built around the Bioconductor **airway** dataset. The goal is to show a coherent progression from raw count data to biological interpretation using one clean, reproducible dataset rather than many disconnected examples.
+
+The `airway` dataset was chosen because it is:
+
+- small enough to run locally
+- biologically interpretable
+- already packaged in Bioconductor
+- widely used in teaching DESeq2 and related workflows
+
+This walkthrough covers:
+
+- gene-level differential expression
+- gene set–level interpretation with ORA and GSEA
+- sample-level pathway/state activity with ssGSEA
+- regulatory/signaling inference with PROGENy and DoRothEA + VIPER
+- a brief note on transcript/genome-aware follow-up as an advanced extension
+
+To reproduce the tutorial:
+
+1. `Rscript scripts/00_setup.R`
+2. `Rscript scripts/01_load_and_qc.R`
+3. `Rscript scripts/02_deseq2.R`
+4. `Rscript scripts/03_ora_gsea.R`
+5. `Rscript scripts/04_gsva_ssgsea.R`
+6. `Rscript scripts/05_progeny_viper.R`
+7. `Rscript scripts/99_render_readme.R`
+
+## 2. Data and experimental design
+
+**Biological question**  
+How does dexamethasone treatment change the transcriptome of human primary airway smooth muscle cells when donor identity is taken into account?
+
+**Input**  
+The Bioconductor `airway` dataset: 8 samples from 4 donor-matched treated/untreated pairs.
+
+**Core method**  
+Represent the experiment as a paired bulk RNA-seq design with the formula `~ cell + dex`, where `cell` captures donor identity and `dex` captures treatment.
+
+**Main outputs**  
+Clean sample metadata plus a visual summary of the paired design.
+
+**Interpretation**  
+This is a simple but important design: each donor contributes both an untreated and a treated sample, so treatment is estimated within donor rather than across unmatched samples.
+
+**Script**  
+[scripts/01_load_and_qc.R](scripts/01_load_and_qc.R)
+
+### Sample metadata
+
+```{r sample-metadata-table}
+sample_metadata %>%
+  kable()
+```
+
+![Sample metadata overview](results/figures/sample_metadata_overview.png)
+
+## 3. Exploratory analysis and QC
+
+**Biological question**  
+Do the samples look broadly well-behaved before we start making biological claims?
+
+**Input**  
+The airway count matrix and the paired sample metadata.
+
+**Core method**  
+Inspect library sizes, transform counts with VST for visualization, and examine PCA plus sample-to-sample distances.
+
+**Main outputs**  
+Library size plot, PCA plot, and sample distance heatmap.
+
+**Interpretation**  
+These plots answer whether the data are technically usable and whether donor structure and treatment structure are visible in the transformed expression space.
+
+**Script**  
+[scripts/01_load_and_qc.R](scripts/01_load_and_qc.R)
+
+### Library sizes
+
+![Library sizes](results/figures/library_sizes.png)
+
+The library sizes are reasonably balanced for a small teaching dataset. Nothing here suggests a catastrophic sequencing-depth imbalance that would dominate the analysis.
+
+### PCA on VST data
+
+![PCA plot](results/figures/pca_vst.png)
+
+The PCA is a quick check of sample structure. In this dataset, donor identity is still a major source of variation, but dexamethasone treatment also contributes visible separation. That is exactly why the paired design matters.
+
+### Sample distance heatmap
+
+![Sample distance heatmap](results/figures/sample_distance_heatmap.png)
+
+The distance heatmap gives the same idea in matrix form: samples from the same donor remain similar, while treatment introduces a systematic shift on top of that donor structure.
+
+## 4. Differential expression with DESeq2
+
+**Biological question**  
+Which genes change with dexamethasone treatment after accounting for donor-to-donor differences?
+
+**Input**  
+Raw gene-level counts and the paired design matrix `~ cell + dex`.
+
+**Core method**  
+Fit a DESeq2 negative-binomial model, test the dex effect, and stabilize effect sizes with `lfcShrink`.
+
+**Main outputs**  
+DESeq2 summary table, MA plot, volcano plot, and a compact table of top differential-expression hits.
+
+**Interpretation**  
+This is the gene-level layer of the story. It tells us which genes move, in which direction, and with what statistical support.
+
+**Script**  
+[scripts/02_deseq2.R](scripts/02_deseq2.R)
+
+### What DESeq2 is doing
+
+DESeq2 models the **raw counts** directly using a negative-binomial framework. It handles normalization internally, estimates dispersion, and then tests whether the treatment coefficient is different from zero after accounting for donor identity.
+
+This distinction matters:
+
+- **`padj`** is the main inference output. It tells you whether the gene-level change is statistically convincing after multiple-testing correction.
+- **`log2FoldChange`** is the estimated effect size. It tells you how large the change is and in which direction.
+- **`lfcShrink`** pulls noisy fold changes toward more stable values, which makes gene ranking and interpretation more trustworthy.
+- **`VST`** is for visualization, clustering, and distance-based exploration. It is **not** the data that DESeq2 uses for the hypothesis test.
+
+### DESeq2 summary
+
+```{r deseq-summary}
+deseq_summary %>%
+  kable()
+```
+
+### MA plot
+
+![MA plot](results/figures/ma_plot.png)
+
+The MA plot shows that dexamethasone changes expression for a non-trivial subset of genes, while most genes remain near zero effect. That is the pattern expected from a targeted treatment response rather than a global transcriptome collapse.
+
+### Volcano plot
+
+![Volcano plot](results/figures/volcano_plot.png)
+
+The volcano plot combines significance and effect size. It is useful as a visual ranking aid, but the actual interpretation should still come from the results table plus the biological context.
+
+### Top DE genes
+
+```{r top-de-table}
+top_de %>%
+  mutate(across(c(baseMean, log2FoldChange, lfcSE, pvalue, padj), signif, 3)) %>%
+  kable()
+```
+
+At this point we have a credible gene-level result, but DE alone is not the full biological interpretation. The next question is what these genes are doing together.
+
+## 5. Functional interpretation
+
+### 5a. ORA
+
+**Biological question**  
+What biological processes are over-represented among the genes that clearly change with treatment?
+
+**Input**  
+A thresholded DEG list using `padj < 0.05` and `|log2FoldChange| >= 1`.
+
+**Core method**  
+Over-representation analysis (ORA) on up- and down-regulated genes separately.
+
+**Main outputs**  
+ORA summary plot and tables of top enriched biological-process terms.
+
+**Interpretation**  
+ORA gives a first-pass biological summary, but it depends on the threshold used to define DE genes.
+
+**Script**  
+[scripts/03_ora_gsea.R](scripts/03_ora_gsea.R)
+
+![ORA summary](results/figures/ora_summary.png)
+
+```{r ora-up}
+top_ora_up %>%
+  select(Description, GeneRatio, Count, p.adjust) %>%
+  slice_head(n = 8) %>%
+  mutate(p.adjust = signif(p.adjust, 3)) %>%
+  kable()
+```
+
+```{r ora-down}
+top_ora_down %>%
+  select(Description, GeneRatio, Count, p.adjust) %>%
+  slice_head(n = 8) %>%
+  mutate(p.adjust = signif(p.adjust, 3)) %>%
+  kable()
+```
+
+In this dataset, ORA highlights the biological themes that stand out once we draw a hard line around the DE genes. That is useful, but it still throws away the graded information in the full ranked result.
+
+### 5b. GSEA
+
+**Biological question**  
+Do coherent pathways shift across the full ranked gene list, even if some of their member genes do not cross a hard DEG cutoff?
+
+**Input**  
+A ranked gene list derived from the DE result, using shrunken log2 fold changes.
+
+**Core method**  
+Gene set enrichment analysis (GSEA) with Hallmark pathways from `msigdbr`.
+
+**Main outputs**  
+GSEA summary plot, top term table, and one positive plus one negative enrichment plot.
+
+**Interpretation**  
+GSEA complements ORA by using the whole ranked result. It is often more sensitive to coordinated but moderate shifts.
+
+**Script**  
+[scripts/03_ora_gsea.R](scripts/03_ora_gsea.R)
+
+![GSEA summary](results/figures/gsea_summary.png)
+
+```{r gsea-table}
+top_gsea %>%
+  select(pathway, NES, padj, size, direction) %>%
+  slice_head(n = 10) %>%
+  mutate(across(c(NES, padj), signif, 3)) %>%
+  kable()
+```
+
+![Top positive GSEA term](results/figures/gsea_top_positive.png)
+
+![Top negative GSEA term](results/figures/gsea_top_negative.png)
+
+This layer shifts the interpretation from “which genes changed?” to “which programs moved coherently with treatment?” That usually gives a more stable biological story than reading the DEG table gene by gene.
+
+## 6. Sample-level pathway/state activity
+
+**Biological question**  
+How do pathway or cell-state programs vary across individual samples, not just between the two group means?
+
+**Input**  
+VST-transformed expression values plus a small local signature panel.
+
+**Core method**  
+Single-sample GSEA (`ssGSEA`) using curated pathway/state signatures relevant to inflammation, signaling, proliferation, and stress.
+
+**Main outputs**  
+Per-sample score table and a heatmap of pathway/state activity.
+
+**Interpretation**  
+These are sample-level program scores. They summarize coordinated expression behavior in each sample; they are not another DE test.
+
+**Script**  
+[scripts/04_gsva_ssgsea.R](scripts/04_gsva_ssgsea.R)
+
+![ssGSEA heatmap](results/figures/ssgsea_heatmap.png)
+
+The heatmap asks a different question from DESeq2. Instead of testing each gene one by one, it asks whether each sample looks more inflammatory, more stress-like, or more proliferative according to a signature. That makes it easier to see whether treatment produces a consistent program-level shift across donors.
+
+## 7. Regulatory/signaling inference
+
+**Biological question**  
+What upstream signaling pathways or transcription factors might be driving the observed gene-expression changes?
+
+**Input**  
+The same VST-transformed expression matrix used for sample-level scoring.
+
+**Core method**  
+Use **PROGENy** to infer pathway activity from downstream footprint genes and **DoRothEA + VIPER** to infer transcription factor activity from regulon structure.
+
+**Main outputs**  
+Tables and plots of inferred pathway and TF activity shifts.
+
+**Interpretation**  
+This is different from ORA or GSEA. These methods do not simply ask whether pathway member genes overlap a DEG list. They infer upstream activity from the downstream transcriptional pattern.
+
+**Script**  
+[scripts/05_progeny_viper.R](scripts/05_progeny_viper.R)
+
+![PROGENy activity](results/figures/progeny_activity.png)
+
+```{r progeny-table}
+top_progeny %>%
+  mutate(across(c(mean_untrt, mean_trt, mean_delta, p_value, padj), signif, 3)) %>%
+  kable()
+```
+
+![VIPER / DoRothEA activity](results/figures/viper_tf_activity.png)
+
+```{r viper-table}
+top_viper %>%
+  slice_head(n = 12) %>%
+  mutate(across(c(mean_untrt, mean_trt, mean_delta, p_value, padj), signif, 3)) %>%
+  kable()
+```
+
+For a glucocorticoid treatment dataset, this layer is helpful because it connects the observed transcriptional response back to plausible pathway and TF programs rather than stopping at descriptive enrichment alone.
+
+## 8. Optional advanced extension
+
+This repository stops at the **gene-level count** workflow on purpose. That keeps the example small, reproducible, and focused on the main interpretation layers.
+
+If the unresolved question were instead:
+
+- whether isoform usage changes without a strong gene-level change
+- whether specific splicing events shift with treatment
+- whether regional genomic patterns matter
+
+then the next layer would be a different kind of analysis:
+
+- **DEXSeq / DRIMSeq** for differential transcript usage or exon-level changes
+- **rMATS** for alternative splicing
+- **PREDA** for genomic region-level patterns
+
+That is not just “more downstream analysis.” It is a different layer that uses information lost when counts are collapsed to genes.
+
+A note on deconvolution: this repo does **not** make tissue deconvolution a core step because `airway` is a primary-cell dataset rather than a mixed-tissue benchmark. It can be mentioned conceptually, but it is not the biologically natural extension here.
+
+## 9. Key takeaways
+
+- The airway dataset is a clean paired example of dexamethasone response in human airway smooth muscle cells.
+- DESeq2 establishes the gene-level answer: which genes change, by how much, and with what statistical support.
+- ORA and GSEA move the story from individual genes to biological programs.
+- ssGSEA shows how those programs vary at the sample level rather than only at the contrast level.
+- PROGENy and DoRothEA + VIPER move one step further upstream and ask what signaling or TF activity might explain the observed pattern.
+- Differential expression is the anchor, but it is not the full interpretation. The most useful biological answer usually comes from combining several layers carefully.
