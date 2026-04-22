@@ -190,16 +190,16 @@ At this point we have a credible gene-level result, but DE alone is not the full
 ### 5a. ORA
 
 **Biological question**  
-What biological processes are over-represented among the genes that clearly change with treatment?
+What biological themes are over-represented among the genes that clearly change with treatment?
 
 **Input**  
 A thresholded DEG list using `padj < 0.05` and `|log2FoldChange| >= 1`.
 
 **Core method**  
-Over-representation analysis (ORA) on up- and down-regulated genes separately.
+Over-representation analysis (ORA) on up- and down-regulated genes separately using the curated Hallmark gene-set collection.
 
 **Main outputs**  
-ORA summary plot and tables of top enriched biological-process terms.
+ORA summary plot and tables of top enriched biological themes.
 
 **Interpretation**  
 ORA gives a first-pass biological summary, but it depends on the threshold used to define DE genes.
@@ -229,7 +229,7 @@ top_ora_down %>%
   kable()
 ```
 
-In this dataset, ORA highlights the biological themes that stand out once we draw a hard line around the DE genes. That is useful, but it still throws away the graded information in the full ranked result.
+In this dataset, ORA highlights the clearest treatment-associated programs once we draw a hard line around the DE genes. That is useful, but it still throws away the graded information in the full ranked result.
 
 ### 5b. GSEA
 
@@ -254,9 +254,11 @@ GSEA complements ORA by using the whole ranked result. It is often more sensitiv
 ![GSEA summary](results/figures/gsea_summary.png)
 
 ```{r gsea-table}
-top_gsea %>%
+bind_rows(
+  top_gsea %>% filter(direction == "Positive") %>% slice_head(n = 4),
+  top_gsea %>% filter(direction == "Negative") %>% slice_head(n = 4)
+) %>%
   select(Pathway, NES, padj, size, direction) %>%
-  slice_head(n = 10) %>%
   mutate(across(c(NES, padj), signif, 3)) %>%
   kable()
 ```

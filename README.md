@@ -246,18 +246,18 @@ genes are doing together.
 ### 5a. ORA
 
 **Biological question**\
-What biological processes are over-represented among the genes that
-clearly change with treatment?
+What biological themes are over-represented among the genes that clearly
+change with treatment?
 
 **Input**\
 A thresholded DEG list using `padj < 0.05` and `|log2FoldChange| >= 1`.
 
 **Core method**\
 Over-representation analysis (ORA) on up- and down-regulated genes
-separately.
+separately using the curated Hallmark gene-set collection.
 
 **Main outputs**\
-ORA summary plot and tables of top enriched biological-process terms.
+ORA summary plot and tables of top enriched biological themes.
 
 **Interpretation**\
 ORA gives a first-pass biological summary, but it depends on the
@@ -273,29 +273,30 @@ threshold used to define DE genes.
 
 #### Top up-regulated themes
 
-| Term                                          | GeneRatio | Count | p.adjust |
-|:----------------------------------------------|:----------|------:|---------:|
-| External Encapsulating Structure Organization | 26/415    |    26 | 8.03e-05 |
-| Muscle System Process                         | 26/415    |    26 | 9.50e-03 |
-| Muscle Adaptation                             | 11/415    |    11 | 9.50e-03 |
-| Striated Muscle Adaptation                    | 7/415     |     7 | 9.50e-03 |
-| Regulation of System Process                  | 26/415    |    26 | 1.25e-02 |
-| Cell Substrate Adhesion                       | 22/415    |    22 | 1.32e-02 |
+| Term                              | GeneRatio | Count | p.adjust |
+|:----------------------------------|:----------|------:|---------:|
+| TNFA Signaling via NFkB           | 26/415    |    26 | 0.00e+00 |
+| Epithelial Mesenchymal Transition | 20/415    |    20 | 1.31e-05 |
+| Hypoxia                           | 15/415    |    15 | 1.64e-03 |
+| Xenobiotic Metabolism             | 12/415    |    12 | 1.94e-02 |
+| UV Response Down                  | 11/415    |    11 | 1.94e-02 |
+| Adipogenesis                      | 13/415    |    13 | 1.99e-02 |
 
 #### Top down-regulated themes
 
-| Term                                              | GeneRatio | Count | p.adjust |
-|:--------------------------------------------------|:----------|------:|---------:|
-| Circulatory System Process                        | 33/345    |    33 | 3.20e-06 |
-| Axon Development                                  | 30/345    |    30 | 1.47e-05 |
-| Regulation of Nervous System Development          | 26/345    |    26 | 1.47e-05 |
-| Regulation of Blood Circulation                   | 19/345    |    19 | 1.47e-05 |
-| Positive Regulation of Nervous System Development | 20/345    |    20 | 2.60e-05 |
-| Regulation of System Process                      | 27/345    |    27 | 1.04e-04 |
+| Term                              | GeneRatio | Count | p.adjust |
+|:----------------------------------|:----------|------:|---------:|
+| Epithelial Mesenchymal Transition | 16/345    |    16 | 0.000566 |
+| P53 Pathway                       | 14/345    |    14 | 0.002000 |
+| KRAS Signaling Up                 | 12/345    |    12 | 0.002320 |
+| TNFA Signaling via NFkB           | 12/345    |    12 | 0.008040 |
+| Inflammatory Response             | 10/345    |    10 | 0.011600 |
+| Interferon Gamma Response         | 10/345    |    10 | 0.036800 |
 
-In this dataset, ORA highlights the biological themes that stand out
-once we draw a hard line around the DE genes. That is useful, but it
-still throws away the graded information in the full ranked result.
+In this dataset, ORA highlights the clearest treatment-associated
+programs once we draw a hard line around the DE genes. That is useful,
+but it still throws away the graded information in the full ranked
+result.
 
 ### 5b. GSEA
 
@@ -329,16 +330,14 @@ sensitive to coordinated but moderate shifts.
 
 | Pathway                   |   NES |    padj | size | direction |
 |:--------------------------|------:|--------:|-----:|:----------|
-| Adipogenesis              |  1.73 | 0.00108 |  196 | Positive  |
-| Oxidative Phosphorylation |  1.52 | 0.03650 |  199 | Positive  |
-| Androgen Response         |  1.50 | 0.16000 |   97 | Positive  |
-| Tnfa Signaling via Nfkb   |  1.39 | 0.16000 |  193 | Positive  |
-| Xenobiotic Metabolism     |  1.40 | 0.20300 |  192 | Positive  |
-| Apical Junction           |  1.37 | 0.21300 |  188 | Positive  |
-| Uv Response Dn            |  1.30 | 0.21300 |  144 | Positive  |
-| Interferon Gamma Response | -1.29 | 0.21300 |  189 | Negative  |
-| Il2 Stat5 Signaling       |  1.29 | 0.21300 |  190 | Positive  |
-| Kras Signaling Dn         |  1.29 | 0.21300 |  167 | Positive  |
+| Adipogenesis              |  1.76 | 0.00072 |  196 | Positive  |
+| Oxidative Phosphorylation |  1.54 | 0.03620 |  199 | Positive  |
+| Androgen Response         |  1.52 | 0.12900 |   97 | Positive  |
+| Xenobiotic Metabolism     |  1.42 | 0.12900 |  192 | Positive  |
+| Interferon Gamma Response | -1.28 | 0.18500 |  189 | Negative  |
+| E2F Targets               | -1.27 | 0.18500 |  200 | Negative  |
+| KRAS Signaling Up         | -1.26 | 0.18500 |  182 | Negative  |
+| Allograft Rejection       | -1.23 | 0.20800 |  174 | Negative  |
 
 <figure>
 <img src="results/figures/gsea_top_positive.png"
