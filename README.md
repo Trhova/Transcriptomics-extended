@@ -1,6 +1,15 @@
 
 # Airway Bulk RNA-seq Walkthrough
 
+**Looking for the full reading-first guide?**\
+The full bulk RNA-seq guide lives on the website here:
+<https://trhova.github.io/guides/bulk-rna-seq/>
+
+This GitHub repository is the runnable companion walkthrough in R. Use
+the website guide for the broader conceptual overview, and use this repo
+when you want a minimal reproducible example with scripts, figures, and
+tables.
+
 ## 1. Project overview
 
 This repository is a small, end-to-end transcriptomics teaching case

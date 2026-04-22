@@ -29,6 +29,11 @@ top_viper <- read_csv("results/tables/top_viper_tfs.csv", show_col_types = FALSE
 
 # Airway Bulk RNA-seq Walkthrough
 
+**Looking for the full reading-first guide?**  
+The full bulk RNA-seq guide lives on the website here: <https://trhova.github.io/guides/bulk-rna-seq/>
+
+This GitHub repository is the runnable companion walkthrough in R. Use the website guide for the broader conceptual overview, and use this repo when you want a minimal reproducible example with scripts, figures, and tables.
+
 ## 1. Project overview
 
 This repository is a small, end-to-end transcriptomics teaching case study built around the Bioconductor **airway** dataset. The goal is to show a coherent progression from raw count data to biological interpretation using one clean, reproducible dataset rather than many disconnected examples.
